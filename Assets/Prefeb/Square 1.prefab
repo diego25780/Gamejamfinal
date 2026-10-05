@@ -211,7 +211,7 @@ MonoBehaviour:
   waveAmplitude: 1.5
   contactDamage: 1
   canShoot: 1
-  enemyBulletPrefab: {fileID: 9000390476106298134, guid: f40e4dfbc1748374aa055fb014640f82, type: 3}
+  enemyBulletPrefab: {fileID: 9000390476106298134, guid: 44aba8f544958b7449b9a707f9a90cfd, type: 3}
   shootPoint: {fileID: 0}
   shootInterval: 1.8
   scoreValue: 100
