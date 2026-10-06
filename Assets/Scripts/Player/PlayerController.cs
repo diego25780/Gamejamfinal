@@ -1,36 +1,55 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Controla a movimentação da nave do jogador em um Shmup horizontal (esquerda para a direita).
-/// Mantém a nave travada dentro dos limites visíveis da câmera.
+/// Controla a movimentação da nave do jogador em um Shmup horizontal.
+/// Mantém a nave travada nos limites da câmera e gerencia a habilidade de Dash desbloqueável.
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movimentação")]
-    [Tooltip("Velocidade de movimento da nave.")]
+    [Header("Movimentação Básica")]
+    [Tooltip("Velocidade normal de movimento da nave.")]
     [SerializeField] private float moveSpeed = 8f;
 
     [Header("Limites de Tela (Margens)")]
-    [Tooltip("Margem interna horizontal para não cortar o sprite nas bordas da tela.")]
     [SerializeField] private float paddingX = 0.6f;
-    [Tooltip("Margem interna vertical para não cortar o sprite nas bordas da tela.")]
     [SerializeField] private float paddingY = 0.6f;
+
+    [Header("Habilidade de Dash (Item Raro)")]
+    [Tooltip("Indica se o jogador já desbloqueou o Dash.")]
+    [SerializeField] private bool hasDash = false;
+    [SerializeField] private float dashSpeed = 22f;
+    [SerializeField] private float dashDuration = 0.18f;
+    [SerializeField] private float dashCooldown = 1.6f;
+    [SerializeField] private KeyCode dashKey = KeyCode.LeftShift;
+    [SerializeField] private AudioClip dashSound;
+    [SerializeField] private AudioClip dashUnlockSound;
 
     private Camera mainCamera;
     private Vector2 minBounds;
     private Vector2 maxBounds;
     private Vector2 movementInput;
+    private Health health;
+    private SpriteRenderer spriteRenderer;
+
+    private bool isDashing = false;
+    private float nextDashTime;
+
+    public bool HasDash => hasDash;
+    public bool IsDashing => isDashing;
 
     private void Awake()
     {
         mainCamera = Camera.main;
+        health = GetComponent<Health>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Start()
     {
         CalculateCameraBounds();
 
-        if (TryGetComponent<Health>(out var health))
+        if (health != null)
         {
             health.onHealthChanged.AddListener((current, max) =>
             {
@@ -48,7 +67,6 @@ public class PlayerController : MonoBehaviour
                 }
             });
 
-            // Envia o valor inicial de vida para a UI
             if (UIManager.Instance != null)
             {
                 UIManager.Instance.UpdateLives(health.CurrentHealth, health.MaxHealth);
@@ -59,13 +77,20 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         ProcessInput();
-        MovePlayer();
-        ClampPositionToBounds();
+
+        if (hasDash && CanDash())
+        {
+            StartCoroutine(DashRoutine());
+            return;
+        }
+
+        if (!isDashing)
+        {
+            MovePlayer();
+            ClampPositionToBounds();
+        }
     }
 
-    /// <summary>
-    /// Captura a entrada do teclado (Setas ou WASD).
-    /// </summary>
     private void ProcessInput()
     {
         float x = Input.GetAxisRaw("Horizontal");
@@ -74,28 +99,92 @@ public class PlayerController : MonoBehaviour
         movementInput = new Vector2(x, y).normalized;
     }
 
+    private bool CanDash()
+    {
+        bool pressedDash = Input.GetKeyDown(dashKey) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetMouseButtonDown(1);
+        return pressedDash && !isDashing && Time.time >= nextDashTime;
+    }
+
+    private IEnumerator DashRoutine()
+    {
+        isDashing = true;
+        nextDashTime = Time.time + dashCooldown;
+
+        // Se estiver parado, dá o dash para frente (direita)
+        Vector2 dashDir = movementInput != Vector2.zero ? movementInput : Vector2.right;
+
+        if (health != null)
+        {
+            health.SetInvulnerable(true); // Imunidade durante o dash
+        }
+
+        if (dashSound != null)
+        {
+            AudioSource.PlayClipAtPoint(dashSound, transform.position);
+        }
+
+        Color originalColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0.5f); // Efeito translúcido
+        }
+
+        float elapsed = 0f;
+        while (elapsed < dashDuration)
+        {
+            transform.position += (Vector3)(dashDir * (dashSpeed * Time.deltaTime));
+            ClampPositionToBounds();
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = originalColor;
+        }
+
+        if (health != null)
+        {
+            health.SetInvulnerable(false);
+        }
+
+        isDashing = false;
+    }
+
     /// <summary>
-    /// Aplica o deslocamento da nave baseado na velocidade e tempo delta.
+    /// Desbloqueia ou aprimora o Dash ao coletar o item raro de Boss.
     /// </summary>
+    public void UnlockOrUpgradeDash()
+    {
+        if (!hasDash)
+        {
+            hasDash = true;
+        }
+        else
+        {
+            // Se já tem, reduz o tempo de recarga e aumenta a velocidade
+            dashCooldown = Mathf.Max(0.7f, dashCooldown - 0.25f);
+            dashSpeed += 2.5f;
+        }
+
+        if (dashUnlockSound != null)
+        {
+            AudioSource.PlayClipAtPoint(dashUnlockSound, transform.position);
+        }
+    }
+
     private void MovePlayer()
     {
         Vector3 delta = (Vector3)(movementInput * moveSpeed * Time.deltaTime);
         transform.position += delta;
     }
 
-    /// <summary>
-    /// Calcula os limites do mundo com base no Viewport da câmera ortográfica.
-    /// </summary>
     public void CalculateCameraBounds()
     {
-        if (mainCamera == null)
-        {
-            mainCamera = Camera.main;
-        }
+        if (mainCamera == null) mainCamera = Camera.main;
 
         if (mainCamera != null)
         {
-            // Converte os cantos da tela (0,0 e 1,1) para coordenadas no mundo
             Vector3 bottomLeft = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0));
             Vector3 topRight = mainCamera.ViewportToWorldPoint(new Vector3(1, 1, 0));
 
@@ -104,9 +193,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Trava a posição da nave para não ultrapassar os limites da câmera.
-    /// </summary>
     private void ClampPositionToBounds()
     {
         float clampedX = Mathf.Clamp(transform.position.x, minBounds.x, maxBounds.x);

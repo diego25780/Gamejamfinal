@@ -33,6 +33,11 @@ public class Health : MonoBehaviour
     public bool IsDead => currentHealth <= 0;
     public bool IsInvulnerable { get; private set; }
 
+    public void SetInvulnerable(bool invulnerable)
+    {
+        IsInvulnerable = invulnerable;
+    }
+
     private SpriteRenderer spriteRenderer;
 
     private void Awake()
@@ -53,11 +58,17 @@ public class Health : MonoBehaviour
     }
 
     /// <summary>
-    /// Aplica dano à entidade respeitando invulnerabilidade temporária.
+    /// Aplica dano à entidade respeitando invulnerabilidade temporária e escudo.
     /// </summary>
     public void TakeDamage(int damageAmount)
     {
         if (IsDead || IsInvulnerable || damageAmount <= 0) return;
+
+        // Se a entidade possuir um escudo ativo (PlayerShield), ele absorve o golpe
+        if (TryGetComponent<PlayerShield>(out var shield) && shield.TryAbsorbDamage())
+        {
+            return;
+        }
 
         currentHealth = Mathf.Max(0, currentHealth - damageAmount);
         onHealthChanged?.Invoke(currentHealth, maxHealth);

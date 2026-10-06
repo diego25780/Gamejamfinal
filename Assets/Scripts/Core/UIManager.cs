@@ -1,10 +1,11 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
 /// Gerencia todos os elementos visuais de UI: HUD de Pontuação e Vidas (com imagens/ícones),
-/// Tela de Pause e Tela de Game Over com Recorde (High Score).
+/// Tela de Pause, Tela de Game Over e Alerta de Chefe (Boss Warning).
 /// </summary>
 public class UIManager : MonoBehaviour
 {
@@ -25,6 +26,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private bool fadeLostLives = false;
     [SerializeField] private Color activeLifeColor = Color.white;
     [SerializeField] private Color lostLifeColor = new Color(1f, 1f, 1f, 0.2f);
+
+    [Header("Alerta de Chefe (Opcional)")]
+    [Tooltip("Objeto/Texto de aviso 'WARNING! BOSS APPROACHING!' na tela.")]
+    [SerializeField] private GameObject bossWarningPanel;
+    [SerializeField] private float bossWarningDuration = 2.5f;
 
     [Header("Tela de Pause")]
     [SerializeField] private GameObject pausePanel;
@@ -50,6 +56,7 @@ public class UIManager : MonoBehaviour
         // Garante que os painéis comecem ocultos
         if (pausePanel != null) pausePanel.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (bossWarningPanel != null) bossWarningPanel.SetActive(false);
 
         // Busca o jogador na cena para inicializar os ícones de vida imediatamente
         GameObject player = GameObject.FindWithTag("Player");
@@ -96,16 +103,33 @@ public class UIManager : MonoBehaviour
 
             if (fadeLostLives)
             {
-                // Deixa o ícone visível, porém apagado/esmaecido
                 lifeImages[i].gameObject.SetActive(true);
                 lifeImages[i].color = isLifeActive ? activeLifeColor : lostLifeColor;
             }
             else
             {
-                // Faz o ícone sumir completamente
                 lifeImages[i].gameObject.SetActive(isLifeActive);
             }
         }
+    }
+
+    /// <summary>
+    /// Exibe temporariamente um aviso estilo arcade quando um Boss se aproxima.
+    /// </summary>
+    public void ShowBossWarning()
+    {
+        if (bossWarningPanel != null)
+        {
+            StopCoroutine(nameof(BossWarningRoutine));
+            StartCoroutine(BossWarningRoutine());
+        }
+    }
+
+    private IEnumerator BossWarningRoutine()
+    {
+        bossWarningPanel.SetActive(true);
+        yield return new WaitForSeconds(bossWarningDuration);
+        bossWarningPanel.SetActive(false);
     }
 
     /// <summary>
@@ -116,6 +140,10 @@ public class UIManager : MonoBehaviour
         if (pausePanel != null)
         {
             pausePanel.SetActive(isPaused);
+        }
+        else
+        {
+            Debug.LogWarning("UIManager: O campo 'Pause Panel' está VAZIO no Inspector do UIManager!");
         }
     }
 

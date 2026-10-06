@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e15134051d979647a4f48da5ab8ed1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 2
+  maxHealth: 4
   currentHealth: 0
   invulnerabilityDuration: 1.5
   canBeInvulnerable: 0
@@ -214,4 +214,8 @@ MonoBehaviour:
   enemyBulletPrefab: {fileID: 9000390476106298134, guid: 44aba8f544958b7449b9a707f9a90cfd, type: 3}
   shootPoint: {fileID: 0}
   shootInterval: 1.8
-  scoreValue: 100
+  scoreValue: 200
+  dropChance: 25
+  healthPickupPrefab: {fileID: 3474977776896701405, guid: a7486163cc15aec418e629702174527f, type: 3}
+  shieldPickupPrefab: {fileID: 7120705051151009340, guid: f852921c7b3e0ae4581ae622c1aa29e9, type: 3}
+  healthDropRatio: 0.5

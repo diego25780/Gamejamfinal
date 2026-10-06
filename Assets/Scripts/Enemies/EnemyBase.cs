@@ -2,8 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// Comportamento base de inimigos retrô em side-scroller.
-/// Move-se da direita para a esquerda em linha reta ou em ondas senoidais,
-/// causa dano por colisão com a nave e pode disparar periodicamente.
+/// Move-se da direita para a esquerda, dispara tiros opcionais,
+/// colide com a nave e possui chance de dropar Vida ou Escudo ao morrer.
 /// </summary>
 public class EnemyBase : MonoBehaviour
 {
@@ -28,6 +28,21 @@ public class EnemyBase : MonoBehaviour
     [Header("Pontuação")]
     [SerializeField] private int scoreValue = 100;
 
+    [Header("Drops / Power-ups")]
+    [Tooltip("Chance percentual (0 a 100) do inimigo dropar um item ao morrer.")]
+    [Range(0, 100)]
+    [SerializeField] private float dropChance = 25f;
+
+    [Tooltip("Prefab do item de recuperar vida.")]
+    [SerializeField] private GameObject healthPickupPrefab;
+
+    [Tooltip("Prefab do item de escudo.")]
+    [SerializeField] private GameObject shieldPickupPrefab;
+
+    [Tooltip("Distribuição entre Vida e Escudo (0.5 = 50% chance de cada).")]
+    [Range(0f, 1f)]
+    [SerializeField] private float healthDropRatio = 0.5f;
+
     private float startY;
     private float nextShootTime;
     private Camera mainCamera;
@@ -49,6 +64,27 @@ public class EnemyBase : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.AddScore(scoreValue);
+        }
+
+        TryDropPickup();
+    }
+
+    private void TryDropPickup()
+    {
+        if (Random.Range(0f, 100f) <= dropChance)
+        {
+            GameObject selectedPrefab = (Random.value <= healthDropRatio) ? healthPickupPrefab : shieldPickupPrefab;
+
+            // Se o sorteado não estiver configurado, usa o que estiver disponível
+            if (selectedPrefab == null)
+            {
+                selectedPrefab = healthPickupPrefab != null ? healthPickupPrefab : shieldPickupPrefab;
+            }
+
+            if (selectedPrefab != null)
+            {
+                Instantiate(selectedPrefab, transform.position, Quaternion.identity);
+            }
         }
     }
 
@@ -100,7 +136,6 @@ public class EnemyBase : MonoBehaviour
 
         Vector3 screenPos = mainCamera.WorldToViewportPoint(transform.position);
 
-        // Se o inimigo passou bem para a esquerda da tela, destrói sem pontuar
         if (screenPos.x < -0.3f)
         {
             Destroy(gameObject);
@@ -109,7 +144,6 @@ public class EnemyBase : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Se bater diretamente na nave do jogador
         if (collision.CompareTag("Player"))
         {
             if (collision.TryGetComponent<Health>(out var playerHealth))
@@ -117,7 +151,6 @@ public class EnemyBase : MonoBehaviour
                 playerHealth.TakeDamage(contactDamage);
             }
 
-            // Destrói o inimigo ao colidir
             if (TryGetComponent<Health>(out var myHealth))
             {
                 myHealth.TakeDamage(myHealth.MaxHealth);

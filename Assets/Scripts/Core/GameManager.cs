@@ -3,7 +3,8 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Gerenciador central do jogo: controla ciclo de vida, pontuação,
-/// recorde (High Score persistente com PlayerPrefs), Pause e Game Over.
+/// recorde (High Score persistente com PlayerPrefs), invocação de Chefes (a cada 5k),
+/// Pause e Game Over.
 /// </summary>
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int currentScore = 0;
     private int highScore = 0;
     private const string HighScoreKey = "RetroShmup_HighScore";
+
+    [Header("Sistema de Boss (Chefe)")]
+    [Tooltip("Intervalo de pontuação para o Boss aparecer (padrão: 5000).")]
+    [SerializeField] private int scoreIntervalForBoss = 5000;
+    private int nextBossScoreThreshold = 5000;
+    private bool isBossActive = false;
 
     public int CurrentScore => currentScore;
     public int HighScore => highScore;
@@ -34,6 +41,8 @@ public class GameManager : MonoBehaviour
 
         // Carrega o recorde gravado
         highScore = PlayerPrefs.GetInt(HighScoreKey, 0);
+
+        nextBossScoreThreshold = scoreIntervalForBoss;
     }
 
     private void Start()
@@ -61,7 +70,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Adiciona pontos ao placar e atualiza UI e Recorde.
+    /// Adiciona pontos ao placar, atualiza UI/Recorde e verifica se atingiu marco do Boss.
     /// </summary>
     public void AddScore(int amount)
     {
@@ -81,6 +90,45 @@ public class GameManager : MonoBehaviour
             UIManager.Instance.UpdateScore(currentScore);
             UIManager.Instance.UpdateHighScore(highScore);
         }
+
+        // Invoca o chefe quando atingir cada múltiplo de 5000 pontos
+        if (!isBossActive && currentScore >= nextBossScoreThreshold)
+        {
+            TriggerBossFight();
+        }
+    }
+
+    private void TriggerBossFight()
+    {
+        isBossActive = true;
+        nextBossScoreThreshold += scoreIntervalForBoss;
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowBossWarning();
+        }
+
+        if (EnemySpawner.Instance != null)
+        {
+            EnemySpawner.Instance.SpawnBoss();
+        }
+        else
+        {
+            Debug.LogWarning("GameManager: EnemySpawner.Instance não encontrado ao tentar invocar o Boss!");
+        }
+    }
+
+    /// <summary>
+    /// Chamado pelo BossController quando o chefe é derrotado.
+    /// </summary>
+    public void OnBossDefeated()
+    {
+        isBossActive = false;
+
+        if (EnemySpawner.Instance != null)
+        {
+            EnemySpawner.Instance.ResumeSpawning();
+        }
     }
 
     /// <summary>
@@ -99,6 +147,10 @@ public class GameManager : MonoBehaviour
         {
             UIManager.Instance.ShowPauseMenu(IsPaused);
         }
+        else
+        {
+            Debug.LogWarning("GameManager: UIManager.Instance não foi encontrado na cena! Verifique se há um GameObject com o script UIManager.");
+        }
     }
 
     /// <summary>
@@ -110,7 +162,6 @@ public class GameManager : MonoBehaviour
 
         IsGameOver = true;
 
-        // Atualiza recorde final
         if (currentScore > highScore)
         {
             highScore = currentScore;
@@ -129,7 +180,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void RestartGame()
     {
-        // Importante: descongela o tempo antes de recarregar a cena
         Time.timeScale = 1f;
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.buildIndex);

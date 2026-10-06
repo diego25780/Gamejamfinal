@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Controla o comportamento de projéteis (tiro do jogador ou dos inimigos).
 /// Move-se continuamente em linha reta, causa dano e se autodestrói.
-/// Configura automaticamente colisor e física para evitar que o tiro trave ou caia.
+/// Suporta rotação automática na direção de disparo, dano customizado e escala.
 /// </summary>
 public class Projectile : MonoBehaviour
 {
@@ -32,14 +32,14 @@ public class Projectile : MonoBehaviour
         if (speed <= 0f) speed = 16f;
         if (direction == Vector2.zero) direction = Vector2.right;
 
-        // Se tiver Rigidbody2D, configura como Kinematic e sem gravidade para não travar fisicamente
+        // Se tiver Rigidbody2D, configura como Kinematic e sem gravidade
         if (TryGetComponent<Rigidbody2D>(out var rb))
         {
             rb.bodyType = RigidbodyType2D.Kinematic;
             rb.gravityScale = 0f;
         }
 
-        // Garante que o colisor seja Trigger para não bater como parede sólida na própria nave
+        // Garante que o colisor seja Trigger
         if (TryGetComponent<Collider2D>(out var col))
         {
             col.isTrigger = true;
@@ -48,43 +48,51 @@ public class Projectile : MonoBehaviour
 
     private void Start()
     {
-        // Autodestruição após o tempo limite
         Destroy(gameObject, lifeTime);
     }
 
     private void Update()
     {
-        // Proteção contra velocidade zerada no Inspector
         if (speed <= 0f) speed = 16f;
 
-        // Movimentação direta de posição no mundo (100% imune a bloqueios de física)
+        // Movimentação direta de posição no mundo
         transform.position += (Vector3)(direction.normalized * (speed * Time.deltaTime));
     }
 
-    public void Setup(Vector2 newDirection, string newTargetTag)
+    /// <summary>
+    /// Configura direção, tag alvo e opcionalmente dano aumentado.
+    /// </summary>
+    public void Setup(Vector2 newDirection, string newTargetTag, int customDamage = -1)
     {
         if (newDirection != Vector2.zero)
         {
             direction = newDirection.normalized;
+
+            // Rotaciona o sprite para apontar na direção do voo
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
         }
+
         targetTag = newTargetTag;
+
+        if (customDamage > 0)
+        {
+            damage = customDamage;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Ignora colisões com objetos que não sejam o alvo definido
         if (!string.IsNullOrEmpty(targetTag) && !collision.CompareTag(targetTag))
         {
             return;
         }
 
-        // Aplica dano caso o alvo possua Health
         if (collision.TryGetComponent<Health>(out var targetHealth))
         {
             targetHealth.TakeDamage(damage);
         }
 
-        // Efeito visual de impacto opcional
         if (hitEffectPrefab != null)
         {
             Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
@@ -92,4 +100,6 @@ public class Projectile : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+    public int GetDamage() => damage;
 }
