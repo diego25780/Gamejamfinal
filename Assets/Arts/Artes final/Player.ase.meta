@@ -129,7 +129,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: Player
     originalName: 
-    pivot: {x: 0.5192308, y: -0.02173913}
+    pivot: {x: 0.91955024, y: 0.49870992}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 

@@ -1155,7 +1155,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -15, y: -248}
+  m_AnchoredPosition: {x: -11, y: -247}
   m_SizeDelta: {x: 46.2149, y: 23.5801}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &866547455
@@ -1603,13 +1603,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1212150628}
-  - component: {fileID: 1212150627}
   - component: {fileID: 1212150626}
   - component: {fileID: 1212150625}
   - component: {fileID: 1212150624}
   - component: {fileID: 1212150623}
   - component: {fileID: 1212150629}
   - component: {fileID: 1212150630}
+  - component: {fileID: 1212150631}
   m_Layer: 0
   m_Name: Nave do jogador
   m_TagString: Player
@@ -1635,7 +1635,7 @@ MonoBehaviour:
   canBeInvulnerable: 0
   explosionPrefab: {fileID: 0}
   hitSound: {fileID: 0}
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: 85a41eee7ab05864cace6a90cf0e9886, type: 3}
   onHealthChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1712,52 +1712,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &1212150627
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1212150622}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: -0.015067339, y: 0.22794127}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5192308, y: -0.02173913}
-    oldSize: {x: 0.52, y: 0.46}
-    newSize: {x: 8.6, y: 6.49}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.55060565, y: 0.5204034}
-  m_EdgeRadius: 0
 --- !u!4 &1212150628
 Transform:
   m_ObjectHideFlags: 0
@@ -1767,8 +1721,8 @@ Transform:
   m_GameObject: {fileID: 1212150622}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.8, y: -0.59773, z: 0}
-  m_LocalScale: {x: 3.609236, y: 2.926212, z: 3.1139853}
+  m_LocalPosition: {x: -7.152, y: 0.053, z: 0}
+  m_LocalScale: {x: 3.6269212, y: 2.886591, z: 3.1139853}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1845,9 +1799,60 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShield
   shieldVisual: {fileID: 0}
-  hitsToAbsorb: 1
-  shieldActivateSound: {fileID: 0}
-  shieldBreakSound: {fileID: 0}
+  hitsToAbsorb: 2
+  shieldActivateSound: {fileID: 8300000, guid: 5b46dad4394e3ce4f911091dfbaad750, type: 3}
+  shieldBreakSound: {fileID: 8300000, guid: 1ef34b67c0459974fa3c369d3e234ad3, type: 3}
+--- !u!68 &1212150631
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212150622}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.2914323, y: 0.2473547}
+  - {x: -0.46520764, y: 0.2171804}
+  - {x: -0.48374116, y: 0.10799112}
+  - {x: -0.4809873, y: -0.09105309}
+  - {x: -0.4532676, y: -0.20068868}
+  - {x: -0.34806904, y: -0.25830364}
+  - {x: -0.1003199, y: -0.18752936}
+  - {x: 0.056087658, y: -0.009204863}
+  - {x: -0.106047064, y: 0.22193448}
+  - {x: -0.29621798, y: 0.24330947}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!1 &1238637564
 GameObject:
   m_ObjectHideFlags: 0
@@ -3265,7 +3270,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -15, y: 17}
+  m_AnchoredPosition: {x: -22, y: 31}
   m_SizeDelta: {x: 46.2149, y: 23.5801}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2146283467
