@@ -706,7 +706,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: bc1f63006b1573348b36f3e6fa27c37d, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -1781,7 +1781,7 @@ MonoBehaviour:
   dashDuration: 0.18
   dashCooldown: 1.6
   dashKey: 304
-  dashSound: {fileID: 0}
+  dashSound: {fileID: 8300000, guid: 08a104c5a99911d4a8eb9f67ac3e23e6, type: 3}
   dashUnlockSound: {fileID: 0}
 --- !u!50 &1212150626
 Rigidbody2D:
