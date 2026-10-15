@@ -168,7 +168,7 @@ MonoBehaviour:
   canBeInvulnerable: 0
   explosionPrefab: {fileID: 0}
   hitSound: {fileID: 0}
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: bfda7726739899f48976e8676023d54e, type: 3}
   onHealthChanged:
     m_PersistentCalls:
       m_Calls: []
