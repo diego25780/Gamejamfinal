@@ -1731,6 +1731,9 @@ MonoBehaviour:
   currentHealth: 0
   invulnerabilityDuration: 1.5
   canBeInvulnerable: 0
+  enableDamageFlash: 1
+  damageFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  damageFlashDuration: 0.12
   explosionPrefab: {fileID: 0}
   hitSound: {fileID: 8300000, guid: ddb979ddf73c8094a967fcc7d9d47874, type: 3}
   deathSound: {fileID: 8300000, guid: 85a41eee7ab05864cace6a90cf0e9886, type: 3}
@@ -2656,6 +2659,7 @@ GameObject:
   - component: {fileID: 1787574193}
   - component: {fileID: 1787574192}
   - component: {fileID: 1787574194}
+  - component: {fileID: 1787574195}
   m_Layer: 0
   m_Name: '_GameManager '
   m_TagString: Untagged
@@ -2719,6 +2723,33 @@ MonoBehaviour:
   gameOverPanel: {fileID: 216934829}
   finalScoreText: {fileID: 1703728413}
   finalHighScoreText: {fileID: 622681478}
+--- !u!114 &1787574195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1787574191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 781a93e43b17424694cf6741b8a5d3c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DifficultyManager
+  scorePerDifficultyLevel: 5000
+  maxDifficultyLevel: 45
+  enemyHealthBonusPerLevel: 1
+  maxEnemyHealthBonus: 10
+  bossHealthBonusPerLevel: 15
+  bossHealthBonusPerEncounter: 25
+  spawnRateReductionPerLevel: 0.12
+  minSpawnRate: 0.6
+  multiSpawnChancePerLevel: 15
+  maxEnemiesPerSpawn: 3
+  enemySpeedBonusPerLevel: 0.03
+  maxSpeedMultiplier: 1.4
+  onDifficultyLevelUp:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1803038693
 GameObject:
   m_ObjectHideFlags: 0

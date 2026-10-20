@@ -48,6 +48,27 @@ public class Health : MonoBehaviour
         IsInvulnerable = invulnerable;
     }
 
+    /// <summary>
+    /// Define a vida máxima e restaura a vida atual (usado para dificuldade adaptativa).
+    /// </summary>
+    public void SetMaxHealth(int newMaxHealth)
+    {
+        maxHealth = Mathf.Max(1, newMaxHealth);
+        currentHealth = maxHealth;
+        onHealthChanged?.Invoke(currentHealth, maxHealth);
+    }
+
+    /// <summary>
+    /// Adiciona um bônus de vida máxima e vida atual (usado para escalonamento de dificuldade).
+    /// </summary>
+    public void AddMaxHealthBonus(int bonus)
+    {
+        if (bonus <= 0) return;
+        maxHealth += bonus;
+        currentHealth += bonus;
+        onHealthChanged?.Invoke(currentHealth, maxHealth);
+    }
+
     private SpriteRenderer[] spriteRenderers;
     private Color[] originalColors;
     private Coroutine flashCoroutine;

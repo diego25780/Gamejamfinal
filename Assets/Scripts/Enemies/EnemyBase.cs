@@ -4,6 +4,7 @@ using UnityEngine;
 /// Comportamento base de inimigos retrô em side-scroller.
 /// Move-se da direita para a esquerda, dispara tiros opcionais,
 /// colide com a nave e possui chance de dropar Vida ou Escudo ao morrer.
+/// Suporta escalonamento de velocidade e tiros com dificuldade adaptativa.
 /// </summary>
 public class EnemyBase : MonoBehaviour
 {
@@ -160,6 +161,25 @@ public class EnemyBase : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+    }
+
+    /// <summary>
+    /// Aplica multiplicador de velocidade ao inimigo (dificuldade adaptativa).
+    /// </summary>
+    public void ApplySpeedMultiplier(float multiplier)
+    {
+        if (multiplier > 0f)
+        {
+            speed *= multiplier;
+        }
+    }
+
+    /// <summary>
+    /// Aumenta a cadência de disparos do inimigo em dificuldades mais altas.
+    /// </summary>
+    public void ApplyShootIntervalReduction(float factor)
+    {
+        shootInterval = Mathf.Max(0.6f, shootInterval * factor);
     }
 
     public int GetScoreValue() => scoreValue;

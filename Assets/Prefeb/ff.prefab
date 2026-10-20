@@ -142,7 +142,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 9000390476106298134, guid: 41bcaa923ccb7e5489f26e76a44e563a, type: 3}
   firePoints: []
   attackCooldown: 1.5
-  scoreReward: 1000
+  scoreReward: 500
   deathExplosionPrefab: {fileID: 0}
   extraShotPickupPrefab: {fileID: 5221038164583867017, guid: 6f4df6a34f4d3f24bbb501640317229d, type: 3}
   damageBoostPickupPrefab: {fileID: 3249203284801438491, guid: cd8c472ae6907e64b88b455295f8c14e, type: 3}
@@ -166,6 +166,9 @@ MonoBehaviour:
   currentHealth: 0
   invulnerabilityDuration: 1.5
   canBeInvulnerable: 0
+  enableDamageFlash: 1
+  damageFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  damageFlashDuration: 0.12
   explosionPrefab: {fileID: 0}
   hitSound: {fileID: 0}
   deathSound: {fileID: 8300000, guid: bfda7726739899f48976e8676023d54e, type: 3}

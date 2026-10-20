@@ -2,6 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// Spawna inimigos continuamente além da borda direita da tela.
+/// Integrado ao DifficultyManager para escalonar vida máxima dos inimigos,
+/// intervalo de spawn mais rápido e surgimento de esquadrões (múltiplos inimigos por onda).
 /// Permite pausar as ondas normais para dar lugar ao Chefe (Boss) e retomar depois.
 /// </summary>
 public class EnemySpawner : MonoBehaviour
@@ -16,8 +18,8 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("Prefab do Chefe que surge a cada 5000 pontos.")]
     [SerializeField] private GameObject bossPrefab;
 
-    [Header("Intervalos de Spawn")]
-    [Tooltip("Tempo em segundos entre o surgimento de cada inimigo.")]
+    [Header("Intervalos de Spawn (Base)")]
+    [Tooltip("Tempo base em segundos entre o surgimento de cada onda.")]
     [SerializeField] private float spawnRate = 2.0f;
     [Tooltip("Variação aleatória do intervalo de spawn.")]
     [SerializeField] private float spawnRateVariance = 0.5f;
@@ -54,18 +56,27 @@ public class EnemySpawner : MonoBehaviour
 
         if (Time.time >= nextSpawnTime)
         {
-            SpawnEnemy();
+            SpawnEnemyWave();
             ScheduleNextSpawn();
         }
     }
 
     private void ScheduleNextSpawn()
     {
-        float interval = Mathf.Max(0.4f, spawnRate + Random.Range(-spawnRateVariance, spawnRateVariance));
+        float currentRate = spawnRate;
+        if (DifficultyManager.Instance != null)
+        {
+            currentRate = DifficultyManager.Instance.GetScaledSpawnRate(spawnRate);
+        }
+
+        float interval = Mathf.Max(0.35f, currentRate + Random.Range(-spawnRateVariance, spawnRateVariance));
         nextSpawnTime = Time.time + interval;
     }
 
-    private void SpawnEnemy()
+    /// <summary>
+    /// Gera uma onda de inimigos, permitindo 1, 2 ou 3 inimigos simultâneos conforme a dificuldade avança.
+    /// </summary>
+    private void SpawnEnemyWave()
     {
         if (enemyPrefabs == null || enemyPrefabs.Length == 0) return;
         if (mainCamera == null) mainCamera = Camera.main;
@@ -75,19 +86,59 @@ public class EnemySpawner : MonoBehaviour
         Vector3 bottomRight = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, 0));
 
         float spawnX = topRight.x + spawnDistanceOutsideScreen;
-        float spawnY = Random.Range(bottomRight.y + verticalPadding, topRight.y - verticalPadding);
+        float minY = bottomRight.y + verticalPadding;
+        float maxY = topRight.y - verticalPadding;
 
-        Vector3 spawnPos = new Vector3(spawnX, spawnY, 0f);
+        // Quantidade de inimigos a spawnar nesta onda (dificuldade adaptativa)
+        int enemiesToSpawn = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.GetSpawnCount() : 1;
 
-        GameObject selectedPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-        if (selectedPrefab != null)
+        // Distribuição vertical para evitar sobreposição quando surgem múltiplos
+        float yStep = (maxY - minY) / Mathf.Max(1, enemiesToSpawn + 1);
+
+        for (int i = 0; i < enemiesToSpawn; i++)
         {
-            Instantiate(selectedPrefab, spawnPos, Quaternion.identity);
+            float spawnY = (enemiesToSpawn == 1)
+                ? Random.Range(minY, maxY)
+                : minY + yStep * (i + 1) + Random.Range(-0.25f, 0.25f);
+
+            spawnY = Mathf.Clamp(spawnY, minY, maxY);
+
+            // Leve escalonamento horizontal em formação
+            Vector3 spawnPos = new Vector3(spawnX + (i * 0.45f), spawnY, 0f);
+
+            GameObject selectedPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            if (selectedPrefab != null)
+            {
+                GameObject enemyObj = Instantiate(selectedPrefab, spawnPos, Quaternion.identity);
+                ApplyDifficultyModifiers(enemyObj);
+            }
         }
     }
 
     /// <summary>
-    /// Spawna o Chefe e pausa a geração de inimigos comuns.
+    /// Aplica bônus de vida e velocidade ao inimigo recém-gerado.
+    /// </summary>
+    private void ApplyDifficultyModifiers(GameObject enemyObj)
+    {
+        if (DifficultyManager.Instance == null || enemyObj == null) return;
+
+        // Escala a Vida Máxima do inimigo
+        int healthBonus = DifficultyManager.Instance.GetEnemyHealthBonus();
+        if (healthBonus > 0 && enemyObj.TryGetComponent<Health>(out var health))
+        {
+            health.AddMaxHealthBonus(healthBonus);
+        }
+
+        // Escala ligeiramente a velocidade
+        float speedMultiplier = DifficultyManager.Instance.GetEnemySpeedMultiplier();
+        if (speedMultiplier > 1f && enemyObj.TryGetComponent<EnemyBase>(out var enemyBase))
+        {
+            enemyBase.ApplySpeedMultiplier(speedMultiplier);
+        }
+    }
+
+    /// <summary>
+    /// Spawna o Chefe (Boss) com bônus de vida adaptativa e pausa a geração de inimigos comuns.
     /// </summary>
     public void SpawnBoss()
     {
@@ -103,7 +154,18 @@ public class EnemySpawner : MonoBehaviour
         float spawnX = (mainCamera != null ? mainCamera.ViewportToWorldPoint(new Vector3(1, 0, 0)).x : 10f) + 4f;
 
         Vector3 bossSpawnPos = new Vector3(spawnX, 0f, 0f);
-        Instantiate(bossPrefab, bossSpawnPos, Quaternion.identity);
+        GameObject bossObj = Instantiate(bossPrefab, bossSpawnPos, Quaternion.identity);
+
+        if (DifficultyManager.Instance != null && bossObj != null)
+        {
+            if (bossObj.TryGetComponent<Health>(out var bossHealth))
+            {
+                int bossBonus = DifficultyManager.Instance.GetBossHealthBonus();
+                bossHealth.AddMaxHealthBonus(bossBonus);
+            }
+
+            DifficultyManager.Instance.RegisterBossEncounter();
+        }
     }
 
     public void PauseSpawning()
