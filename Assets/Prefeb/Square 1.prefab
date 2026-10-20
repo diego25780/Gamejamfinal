@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6526382325037558610}
   - component: {fileID: 3137466446263687697}
   - component: {fileID: 7559867339425708030}
-  - component: {fileID: 3440572467707839024}
+  - component: {fileID: 1281988317647399938}
   m_Layer: 0
   m_Name: Square 1
   m_TagString: Enemy
@@ -85,12 +85,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 3367472676036784258, guid: b592720d8322d394491f9b0904ed74ba, type: 3}
+  m_Sprite: {fileID: 847395641414046176, guid: c1890746864dba9478685d37cb79dad2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.48, y: 0.42}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -138,6 +138,9 @@ MonoBehaviour:
   currentHealth: 0
   invulnerabilityDuration: 1.5
   canBeInvulnerable: 0
+  enableDamageFlash: 1
+  damageFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  damageFlashDuration: 0.12
   explosionPrefab: {fileID: 0}
   hitSound: {fileID: 0}
   deathSound: {fileID: 0}
@@ -173,7 +176,7 @@ MonoBehaviour:
   healthPickupPrefab: {fileID: 3474977776896701405, guid: a7486163cc15aec418e629702174527f, type: 3}
   shieldPickupPrefab: {fileID: 7120705051151009340, guid: f852921c7b3e0ae4581ae622c1aa29e9, type: 3}
   healthDropRatio: 0.5
---- !u!68 &3440572467707839024
+--- !u!68 &1281988317647399938
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -210,24 +213,32 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: 0.24441433, y: -0.16062294}
-  - {x: 0.19487253, y: -0.19253962}
-  - {x: -0.025421055, y: -0.2134946}
-  - {x: -0.107243754, y: -0.17488708}
-  - {x: -0.21531741, y: -0.104035094}
-  - {x: -0.23932096, y: -0.047808133}
-  - {x: -0.11036686, y: -0.056244764}
-  - {x: -0.105766445, y: 0.058513634}
-  - {x: -0.24278194, y: 0.04173107}
-  - {x: -0.25002575, y: 0.07374163}
-  - {x: -0.13182066, y: 0.18301596}
-  - {x: 0.026937388, y: 0.23040709}
-  - {x: 0.2256817, y: 0.18043137}
-  - {x: 0.25355417, y: 0.15410511}
-  - {x: 0.15806371, y: 0.045544937}
-  - {x: 0.10613227, y: -0.0018623136}
-  - {x: 0.24746612, y: -0.14263605}
-  - {x: 0.114168994, y: -0.08202953}
+  - {x: 0.11842322, y: 0.21521954}
+  - {x: 0.07718164, y: 0.23509344}
+  - {x: 0.124445006, y: 0.26789647}
+  - {x: 0.13182145, y: 0.2819821}
+  - {x: 0.15393302, y: 0.28575212}
+  - {x: 0.18914297, y: 0.29861158}
+  - {x: 0.19524191, y: 0.35705453}
+  - {x: 0.20826837, y: 0.38112223}
+  - {x: 0.27746096, y: 0.38884872}
+  - {x: 0.17221858, y: 0.43203217}
+  - {x: 0.05484653, y: 0.4544259}
+  - {x: -0.0011412492, y: 0.4509893}
+  - {x: -0.10152317, y: 0.4300421}
+  - {x: -0.2129078, y: 0.34264565}
+  - {x: -0.26213062, y: 0.29439372}
+  - {x: -0.12122899, y: 0.29761901}
+  - {x: -0.11561772, y: 0.2391159}
+  - {x: -0.12888676, y: 0.18508829}
+  - {x: -0.25744206, y: 0.17723644}
+  - {x: -0.17611708, y: 0.10240747}
+  - {x: -0.09261724, y: 0.050387684}
+  - {x: -0.009359063, y: 0.015240297}
+  - {x: 0.12913328, y: 0.033947438}
+  - {x: 0.23342389, y: 0.071732946}
+  - {x: 0.18603364, y: 0.16144483}
+  - {x: 0.12149534, y: 0.21416554}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
