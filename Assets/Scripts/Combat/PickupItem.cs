@@ -179,10 +179,21 @@ public class PickupItem : MonoBehaviour
     }
 #endif
 
+    private float bobbingTimer = 0f;
+
     private void Update()
     {
-        float x = transform.position.x - (floatSpeed * Time.unscaledDeltaTime);
-        float y = startY + Mathf.Sin(Time.unscaledTime * bobbingFrequency) * bobbingAmplitude;
+        // Se o jogo estiver pausado (Menu de Pause / Time.timeScale == 0), congela o movimento na tela!
+        if (Time.timeScale <= 0.0001f || (GameManager.Instance != null && GameManager.Instance.IsPaused))
+        {
+            return;
+        }
+
+        float dt = Time.unscaledDeltaTime;
+        bobbingTimer += dt;
+
+        float x = transform.position.x - (floatSpeed * dt);
+        float y = startY + Mathf.Sin(bobbingTimer * bobbingFrequency) * bobbingAmplitude;
 
         transform.position = new Vector3(x, y, transform.position.z);
 

@@ -110,7 +110,7 @@ MonoBehaviour:
   shieldSprite: {fileID: 0}
   extraShotSprite: {fileID: 0}
   damageBoostSprite: {fileID: 0}
-  dashSprite: {fileID: 0}
+  dashSprite: {fileID: -493195851146387123, guid: c65327a4b0cfdae4f8daf44d1c3be620, type: 3}
   cryoShotSprite: {fileID: 0}
   timeDilationSprite: {fileID: 0}
   piercingShotSprite: {fileID: 0}

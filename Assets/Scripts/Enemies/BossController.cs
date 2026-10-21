@@ -308,6 +308,41 @@ public class BossController : MonoBehaviour
         }
     }
 
+    [Header("Dano de Contato do Boss")]
+    [Tooltip("Dano causado ao jogador caso ele colida diretamente com o Boss.")]
+    [SerializeField] private int bossContactDamage = 1;
+    [SerializeField] private float contactDamageCooldown = 0.8f;
+    private float nextContactDamageTime = 0f;
+
+    private void OnTriggerEnter2D(Collider2D collision) => HandleBossPlayerContact(collision.gameObject);
+    private void OnTriggerStay2D(Collider2D collision) => HandleBossPlayerContact(collision.gameObject);
+    private void OnCollisionEnter2D(Collision2D collision) => HandleBossPlayerContact(collision.gameObject);
+    private void OnCollisionStay2D(Collision2D collision) => HandleBossPlayerContact(collision.gameObject);
+
+    private void HandleBossPlayerContact(GameObject target)
+    {
+        if (currentState == BossState.Defeated || target == null) return;
+        if (Time.time < nextContactDamageTime) return;
+
+        bool isPlayer = target.CompareTag("Player") || 
+                        (target.transform.root != null && target.transform.root.CompareTag("Player"));
+
+        Health playerHealth = target.GetComponentInParent<Health>();
+        if (playerHealth == null && target.transform.root != null)
+        {
+            playerHealth = target.transform.root.GetComponentInChildren<Health>();
+        }
+
+        if (isPlayer || target.GetComponentInParent<PlayerController>() != null)
+        {
+            if (playerHealth != null)
+            {
+                nextContactDamageTime = Time.time + contactDamageCooldown;
+                playerHealth.TakeDamage(bossContactDamage > 0 ? bossContactDamage : 1);
+            }
+        }
+    }
+
     private void OnBossDefeated()
     {
         if (currentState == BossState.Defeated) return;

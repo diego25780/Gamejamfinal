@@ -202,4 +202,21 @@ public class PlayerController : MonoBehaviour
 
         transform.position = new Vector3(clampedX, clampedY, transform.position.z);
     }
+
+    private void OnTriggerEnter2D(Collider2D collision) => CheckEnemyContact(collision.gameObject);
+    private void OnCollisionEnter2D(Collision2D collision) => CheckEnemyContact(collision.gameObject);
+
+    private void CheckEnemyContact(GameObject target)
+    {
+        if (target == null || isDashing) return;
+
+        bool isEnemy = target.CompareTag("Enemy") || (target.transform.root != null && target.transform.root.CompareTag("Enemy"));
+        if (isEnemy || target.GetComponentInParent<EnemyBase>() != null || target.GetComponentInParent<BossController>() != null)
+        {
+            if (health != null && !health.IsInvulnerable)
+            {
+                health.TakeDamage(1);
+            }
+        }
+    }
 }

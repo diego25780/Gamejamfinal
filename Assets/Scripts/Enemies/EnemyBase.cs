@@ -149,15 +149,34 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision) => HandlePlayerContact(collision.gameObject);
+    private void OnTriggerStay2D(Collider2D collision) => HandlePlayerContact(collision.gameObject);
+    private void OnCollisionEnter2D(Collision2D collision) => HandlePlayerContact(collision.gameObject);
+    private void OnCollisionStay2D(Collision2D collision) => HandlePlayerContact(collision.gameObject);
+
+    private void HandlePlayerContact(GameObject target)
     {
-        if (collision.CompareTag("Player"))
+        if (target == null) return;
+
+        // Detecta se colidiu com o jogador (por tag no objeto, no pai ou raiz)
+        bool isPlayer = target.CompareTag("Player") || 
+                        (target.transform.root != null && target.transform.root.CompareTag("Player"));
+
+        Health playerHealth = target.GetComponentInParent<Health>();
+        if (playerHealth == null && target.transform.root != null)
         {
-            if (collision.TryGetComponent<Health>(out var playerHealth))
+            playerHealth = target.transform.root.GetComponentInChildren<Health>();
+        }
+
+        if (isPlayer || target.GetComponentInParent<PlayerController>() != null)
+        {
+            if (playerHealth != null)
             {
-                playerHealth.TakeDamage(contactDamage);
+                int damage = contactDamage > 0 ? contactDamage : 1;
+                playerHealth.TakeDamage(damage);
             }
 
+            // Inimigo comum se destrói ao colidir com o jogador
             if (TryGetComponent<Health>(out var myHealth))
             {
                 myHealth.TakeDamage(myHealth.MaxHealth);
