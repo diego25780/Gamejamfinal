@@ -4,6 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Controla a movimentação da nave do jogador em um Shmup horizontal.
 /// Mantém a nave travada nos limites da câmera e gerencia a habilidade de Dash desbloqueável.
+/// Suporta câmera lenta / distorção temporal mantendo a velocidade normal da nave.
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
@@ -102,13 +103,13 @@ public class PlayerController : MonoBehaviour
     private bool CanDash()
     {
         bool pressedDash = Input.GetKeyDown(dashKey) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetMouseButtonDown(1);
-        return pressedDash && !isDashing && Time.time >= nextDashTime;
+        return pressedDash && !isDashing && Time.unscaledTime >= nextDashTime;
     }
 
     private IEnumerator DashRoutine()
     {
         isDashing = true;
-        nextDashTime = Time.time + dashCooldown;
+        nextDashTime = Time.unscaledTime + dashCooldown;
 
         // Se estiver parado, dá o dash para frente (direita)
         Vector2 dashDir = movementInput != Vector2.zero ? movementInput : Vector2.right;
@@ -132,9 +133,10 @@ public class PlayerController : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < dashDuration)
         {
-            transform.position += (Vector3)(dashDir * (dashSpeed * Time.deltaTime));
+            // Usa unscaledDeltaTime para manter velocidade normal em câmera lenta
+            transform.position += (Vector3)(dashDir * (dashSpeed * Time.unscaledDeltaTime));
             ClampPositionToBounds();
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
 
@@ -162,7 +164,6 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // Se já tem, reduz o tempo de recarga e aumenta a velocidade
             dashCooldown = Mathf.Max(0.7f, dashCooldown - 0.25f);
             dashSpeed += 2.5f;
         }
@@ -175,7 +176,8 @@ public class PlayerController : MonoBehaviour
 
     private void MovePlayer()
     {
-        Vector3 delta = (Vector3)(movementInput * moveSpeed * Time.deltaTime);
+        // Usa unscaledDeltaTime para o jogador não ser desacelerado durante Distorção Temporal
+        Vector3 delta = (Vector3)(movementInput * moveSpeed * Time.unscaledDeltaTime);
         transform.position += delta;
     }
 

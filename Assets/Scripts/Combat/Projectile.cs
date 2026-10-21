@@ -1,9 +1,14 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// Controla o comportamento de projéteis (tiro do jogador ou dos inimigos).
 /// Move-se continuamente em linha reta, causa dano e se autodestrói.
-/// Suporta rotação automática na direção de disparo, dano customizado e escala.
+/// Suporta:
+/// - Rotação automática na direção de disparo
+/// - Dano customizado e escala
+/// - Tiro Perfurante (atravessa múltiplos inimigos sem sumir no primeiro)
+/// - Tiro Criogênico (congela/desacelera os alvos atingidos)
 /// </summary>
 public class Projectile : MonoBehaviour
 {
@@ -26,24 +31,35 @@ public class Projectile : MonoBehaviour
     [Header("Impacto Visual")]
     [SerializeField] private GameObject hitEffectPrefab;
 
+    [Header("Modificadores Especiais")]
+    [SerializeField] private bool isPiercing = false;
+    [SerializeField] private int maxPierces = 3;
+    [SerializeField] private bool isCryo = false;
+    [SerializeField] private float freezeDuration = 2.5f;
+
+    private int remainingPierces = 1;
+    private HashSet<Collider2D> alreadyHitColliders = new HashSet<Collider2D>();
+    private SpriteRenderer spriteRenderer;
+
     private void Awake()
     {
-        // Garante valores válidos mesmo se o Inspector estiver zerado
         if (speed <= 0f) speed = 16f;
         if (direction == Vector2.zero) direction = Vector2.right;
 
-        // Se tiver Rigidbody2D, configura como Kinematic e sem gravidade
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         if (TryGetComponent<Rigidbody2D>(out var rb))
         {
             rb.bodyType = RigidbodyType2D.Kinematic;
             rb.gravityScale = 0f;
         }
 
-        // Garante que o colisor seja Trigger
         if (TryGetComponent<Collider2D>(out var col))
         {
             col.isTrigger = true;
         }
+
+        remainingPierces = isPiercing ? maxPierces : 1;
     }
 
     private void Start()
@@ -54,8 +70,6 @@ public class Projectile : MonoBehaviour
     private void Update()
     {
         if (speed <= 0f) speed = 16f;
-
-        // Movimentação direta de posição no mundo
         transform.position += (Vector3)(direction.normalized * (speed * Time.deltaTime));
     }
 
@@ -67,8 +81,6 @@ public class Projectile : MonoBehaviour
         if (newDirection != Vector2.zero)
         {
             direction = newDirection.normalized;
-
-            // Rotaciona o sprite para apontar na direção do voo
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0, 0, angle);
         }
@@ -81,6 +93,31 @@ public class Projectile : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Aplica efeitos de Tiro Perfurante e/ou Tiro Criogênico no projétil.
+    /// </summary>
+    public void SetupModifiers(bool piercing, int pierces = 3, bool cryo = false)
+    {
+        isPiercing = piercing;
+        maxPierces = pierces;
+        remainingPierces = isPiercing ? maxPierces : 1;
+        isCryo = cryo;
+
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            if (isCryo)
+            {
+                spriteRenderer.color = new Color(0.3f, 0.9f, 1f, 1f); // Ciano brilhante
+            }
+            else if (isPiercing)
+            {
+                spriteRenderer.color = new Color(1f, 0.2f, 0.9f, 1f); // Magenta/Roxo neon
+            }
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!string.IsNullOrEmpty(targetTag) && !collision.CompareTag(targetTag))
@@ -88,17 +125,37 @@ public class Projectile : MonoBehaviour
             return;
         }
 
+        // Evita dano duplo no mesmo inimigo ao atravessá-lo
+        if (alreadyHitColliders.Contains(collision))
+        {
+            return;
+        }
+        alreadyHitColliders.Add(collision);
+
+        // 1. Causa dano
         if (collision.TryGetComponent<Health>(out var targetHealth))
         {
             targetHealth.TakeDamage(damage);
         }
 
+        // 2. Aplica congelamento se for Criogênico
+        if (isCryo)
+        {
+            FreezeEffect.Apply(collision.gameObject, freezeDuration, 0.3f);
+        }
+
+        // 3. Efeito de impacto
         if (hitEffectPrefab != null)
         {
             Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
         }
 
-        Destroy(gameObject);
+        // 4. Lógica de perfuração
+        remainingPierces--;
+        if (remainingPierces <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     public int GetDamage() => damage;

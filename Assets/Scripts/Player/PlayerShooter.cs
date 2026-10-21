@@ -2,7 +2,9 @@ using UnityEngine;
 
 /// <summary>
 /// Controla o disparo de armas do jogador.
-/// Suporta progressão de tiros extras (multi-shot), aumento de dano e tiros gigantes.
+/// Suporta:
+/// - Tiros extras (multi-shot) e aumento de dano (Permanentes)
+/// - Tiro Criogênico e Tiro Perfurante obtidos do Boss (Permanentes)
 /// </summary>
 public class PlayerShooter : MonoBehaviour
 {
@@ -21,34 +23,38 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField] private float fireRate = 0.2f;
 
     [Header("Áudio")]
-    [Tooltip("Efeito sonoro ao atirar.")]
     [SerializeField] private AudioClip shootSound;
     [SerializeField] private AudioClip powerUpSound;
 
-    [Header("Upgrades (Tiros Extras e Dano)")]
-    [Tooltip("Nível de tiros extras (1 = simples, 2 = duplo, 3 = triplo, etc.).")]
+    [Header("Upgrades Básicos (Permanentes)")]
     [SerializeField] private int shotLevel = 1;
-
-    [Tooltip("Bônus de dano adicionado a cada tiro.")]
     [SerializeField] private int damageBonus = 0;
-
-    [Tooltip("Multiplicador da escala visual do tiro (tiros maiores).")]
     [SerializeField] private float bulletScaleMultiplier = 1f;
+
+    [Header("Upgrades Lendários do Boss (Permanentes)")]
+    [Tooltip("Habilita o Tiro de Gelo que congela/desacelera inimigos para sempre.")]
+    [SerializeField] private bool isCryoActive = false;
+
+    [Tooltip("Habilita o Tiro Perfurante que atravessa fileiras de inimigos para sempre.")]
+    [SerializeField] private bool isPiercingActive = false;
 
     private float nextFireTime;
 
     public int ShotLevel => shotLevel;
     public int DamageBonus => damageBonus;
     public float BulletScaleMultiplier => bulletScaleMultiplier;
+    public bool IsCryoActive => isCryoActive;
+    public bool IsPiercingActive => isPiercingActive;
 
     private void Update()
     {
+        // Disparo (usa unscaledTime para não ser afetado por câmera lenta)
         if (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1"))
         {
-            if (Time.time >= nextFireTime)
+            if (Time.unscaledTime >= nextFireTime)
             {
                 Shoot();
-                nextFireTime = Time.time + fireRate;
+                nextFireTime = Time.unscaledTime + fireRate;
             }
         }
     }
@@ -59,42 +65,33 @@ public class PlayerShooter : MonoBehaviour
 
         Vector3 baseSpawn = transform.position + spawnOffset;
 
-        // Se tiver firePoints definidos manualmente no Inspector, usa eles
         if (firePoints != null && firePoints.Length > 0)
         {
             foreach (Transform point in firePoints)
             {
-                if (point != null)
-                {
-                    InstantiateLaser(point.position, Vector2.right);
-                }
+                if (point != null) InstantiateLaser(point.position, Vector2.right);
             }
         }
         else
         {
-            // Sistema dinâmico de tiros extras por nível (Multi-shot estilo arcade retrô)
             switch (shotLevel)
             {
                 case 1:
-                    // Tiro simples no centro
                     InstantiateLaser(baseSpawn, Vector2.right);
                     break;
 
                 case 2:
-                    // Tiro duplo paralelo
                     InstantiateLaser(baseSpawn + new Vector3(0f, 0.25f, 0f), Vector2.right);
                     InstantiateLaser(baseSpawn + new Vector3(0f, -0.25f, 0f), Vector2.right);
                     break;
 
                 case 3:
-                    // Tiro triplo em leque (1 reto, 1 inclinado para cima, 1 para baixo)
                     InstantiateLaser(baseSpawn, Vector2.right);
                     InstantiateLaser(baseSpawn + new Vector3(0f, 0.2f, 0f), new Vector2(1f, 0.25f));
                     InstantiateLaser(baseSpawn + new Vector3(0f, -0.2f, 0f), new Vector2(1f, -0.25f));
                     break;
 
-                default: // Nível 4 ou superior
-                    // Tiro quádruplo / leque avançado
+                default:
                     InstantiateLaser(baseSpawn + new Vector3(0f, 0.35f, 0f), new Vector2(1f, 0.35f));
                     InstantiateLaser(baseSpawn + new Vector3(0f, 0.12f, 0f), Vector2.right);
                     InstantiateLaser(baseSpawn + new Vector3(0f, -0.12f, 0f), Vector2.right);
@@ -112,19 +109,38 @@ public class PlayerShooter : MonoBehaviour
     private void InstantiateLaser(Vector3 spawnPosition, Vector2 direction)
     {
         GameObject laser = Instantiate(laserPrefab, spawnPosition, Quaternion.identity);
-
-        // Aplica o aumento de escala visual
         laser.transform.localScale *= bulletScaleMultiplier;
 
         if (laser.TryGetComponent<Projectile>(out var proj))
         {
             int totalDamage = 1 + damageBonus;
             proj.Setup(direction, "Enemy", totalDamage);
+            proj.SetupModifiers(isPiercingActive, 3, isCryoActive);
         }
     }
 
+    // --- MÉTODOS DE ATIVAÇÃO PERMANENTES ---
+
     /// <summary>
-    /// Adiciona um nível de tiro extra (tiro duplo, triplo, etc.).
+    /// Ativa o Tiro Criogênico de forma PERMANENTE na nave para o resto da partida.
+    /// </summary>
+    public void ActivateCryo(float duration = -1f)
+    {
+        isCryoActive = true;
+        PlayPowerUpFeedback();
+    }
+
+    /// <summary>
+    /// Ativa o Tiro Perfurante de forma PERMANENTE na nave para o resto da partida.
+    /// </summary>
+    public void ActivatePiercing(float duration = -1f)
+    {
+        isPiercingActive = true;
+        PlayPowerUpFeedback();
+    }
+
+    /// <summary>
+    /// Aumenta o nível de tiro (duplo, triplo, etc.) de forma PERMANENTE.
     /// </summary>
     public void AddExtraShot()
     {
@@ -133,7 +149,7 @@ public class PlayerShooter : MonoBehaviour
     }
 
     /// <summary>
-    /// Aumenta o dano e faz o projétil ficar fisicamente maior na tela.
+    /// Aumenta o dano e a escala visual do tiro de forma PERMANENTE.
     /// </summary>
     public void AddDamageBoost(int extraDamage = 1, float extraScale = 0.35f)
     {

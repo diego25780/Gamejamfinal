@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Comportamento base de inimigos retrô em side-scroller.
 /// Move-se da direita para a esquerda, dispara tiros opcionais,
-/// colide com a nave e possui chance de dropar Vida ou Escudo ao morrer.
+/// colide com a nave e possui chance de dropar Vida, Escudo ou Power-ups especiais ao morrer.
 /// Suporta escalonamento de velocidade e tiros com dificuldade adaptativa.
 /// </summary>
 public class EnemyBase : MonoBehaviour
@@ -74,17 +74,23 @@ public class EnemyBase : MonoBehaviour
     {
         if (Random.Range(0f, 100f) <= dropChance)
         {
-            GameObject selectedPrefab = (Random.value <= healthDropRatio) ? healthPickupPrefab : shieldPickupPrefab;
+            GameObject templatePrefab = healthPickupPrefab != null ? healthPickupPrefab : shieldPickupPrefab;
+            if (templatePrefab == null) return;
 
-            // Se o sorteado não estiver configurado, usa o que estiver disponível
-            if (selectedPrefab == null)
-            {
-                selectedPrefab = healthPickupPrefab != null ? healthPickupPrefab : shieldPickupPrefab;
-            }
+            GameObject spawnedItem = Instantiate(templatePrefab, transform.position, Quaternion.identity);
 
-            if (selectedPrefab != null)
+            // 70% de chance de Vida/Escudo e 30% de chance de Distorção Temporal (Câmera Lenta)
+            if (spawnedItem.TryGetComponent<PickupItem>(out var pickup))
             {
-                Instantiate(selectedPrefab, transform.position, Quaternion.identity);
+                float roll = Random.value;
+                if (roll < 0.70f)
+                {
+                    pickup.SetPickupType(Random.value <= healthDropRatio ? PickupItem.PickupType.Health : PickupItem.PickupType.Shield);
+                }
+                else
+                {
+                    pickup.SetPickupType(PickupItem.PickupType.TimeDilation);
+                }
             }
         }
     }

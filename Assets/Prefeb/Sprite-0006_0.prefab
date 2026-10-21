@@ -106,9 +106,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickupItem
   itemType: 4
+  healthSprite: {fileID: 0}
+  shieldSprite: {fileID: 0}
+  extraShotSprite: {fileID: 0}
+  damageBoostSprite: {fileID: 0}
+  dashSprite: {fileID: 0}
+  cryoShotSprite: {fileID: 0}
+  timeDilationSprite: {fileID: 0}
+  piercingShotSprite: {fileID: 0}
+  tintCustomSprites: 0
   healAmount: 1
   bonusDamage: 1
   bonusScale: 0.35
+  timeDilationDuration: 5
   floatSpeed: 2.2
   bobbingFrequency: 3
   bobbingAmplitude: 0.4

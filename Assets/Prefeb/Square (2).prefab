@@ -84,7 +84,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -8246144553581071408, guid: c178b825773320d46a1df33c8237c099, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.9, b: 0.2, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -106,9 +106,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickupItem
   itemType: 2
+  healthSprite: {fileID: 0}
+  shieldSprite: {fileID: 0}
+  extraShotSprite: {fileID: 0}
+  damageBoostSprite: {fileID: 0}
+  dashSprite: {fileID: 0}
+  cryoShotSprite: {fileID: 0}
+  timeDilationSprite: {fileID: 0}
+  piercingShotSprite: {fileID: 0}
+  tintCustomSprites: 0
   healAmount: 1
   bonusDamage: 1
   bonusScale: 0.35
+  timeDilationDuration: 5
   floatSpeed: 2.2
   bobbingFrequency: 3
   bobbingAmplitude: 0.4

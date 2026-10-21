@@ -139,14 +139,22 @@ MonoBehaviour:
   verticalSpeed: 6
   minY: -3.5
   maxY: 3.5
-  bulletPrefab: {fileID: 9000390476106298134, guid: 41bcaa923ccb7e5489f26e76a44e563a, type: 3}
+  bulletPrefab: {fileID: 6186229716618302393, guid: 06fec637c21aac24b80b1bc3fc0dd574, type: 3}
   firePoints: []
   attackCooldown: 1.5
+  clusterBombPrefab: {fileID: 0}
+  clusterFragmentCount: 8
+  clusterFuseTime: 1
+  clusterSpreadAngle: 120
   scoreReward: 500
   deathExplosionPrefab: {fileID: 0}
+  cryoShotPickupPrefab: {fileID: 0}
+  piercingShotPickupPrefab: {fileID: 0}
   extraShotPickupPrefab: {fileID: 5221038164583867017, guid: 6f4df6a34f4d3f24bbb501640317229d, type: 3}
   damageBoostPickupPrefab: {fileID: 3249203284801438491, guid: cd8c472ae6907e64b88b455295f8c14e, type: 3}
   dashPickupPrefab: {fileID: 1993692072306849271, guid: ca4054cb6da728d49b965150e6009357, type: 3}
+  cryoWeight: 25
+  piercingWeight: 25
   extraShotWeight: 45
   damageBoostWeight: 45
   dashWeight: 10
@@ -162,7 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e15134051d979647a4f48da5ab8ed1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 50
+  maxHealth: 1
   currentHealth: 0
   invulnerabilityDuration: 1.5
   canBeInvulnerable: 0
