@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 847395641414046176, guid: c1890746864dba9478685d37cb79dad2, type: 3}
+  m_Sprite: {fileID: 4772369235552074411, guid: 18d43b60969068744a535a80dbb6102f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -171,7 +171,7 @@ MonoBehaviour:
   enemyBulletPrefab: {fileID: 9000390476106298134, guid: 44aba8f544958b7449b9a707f9a90cfd, type: 3}
   shootPoint: {fileID: 0}
   shootInterval: 1.5
-  scoreValue: 100
+  scoreValue: 200
   dropChance: 25
   healthPickupPrefab: {fileID: 3474977776896701405, guid: a7486163cc15aec418e629702174527f, type: 3}
   shieldPickupPrefab: {fileID: 7120705051151009340, guid: f852921c7b3e0ae4581ae622c1aa29e9, type: 3}
