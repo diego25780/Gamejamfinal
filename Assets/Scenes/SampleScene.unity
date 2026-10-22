@@ -2681,7 +2681,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 975dae32f23e154488df3d944c353be2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  currentScore: 4900
+  currentScore: 0
   scoreIntervalForBoss: 5000
 --- !u!4 &1787574193
 Transform:
