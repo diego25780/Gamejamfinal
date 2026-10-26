@@ -113,7 +113,7 @@ MonoBehaviour:
   dashSprite: {fileID: -493195851146387123, guid: c65327a4b0cfdae4f8daf44d1c3be620, type: 3}
   cryoShotSprite: {fileID: -2158441306721915952, guid: 636161ebc6e1d58429cef8fabf1bbc71, type: 3}
   timeDilationSprite: {fileID: 5662783821573247211, guid: 4d638e0ed5ed3af4891d7cb75efc57a5, type: 3}
-  piercingShotSprite: {fileID: 0}
+  piercingShotSprite: {fileID: -4056742163134591891, guid: bdd756db4ffd18a4e9fd4e674a1ec198, type: 3}
   tintCustomSprites: 0
   healAmount: 1
   bonusDamage: 1

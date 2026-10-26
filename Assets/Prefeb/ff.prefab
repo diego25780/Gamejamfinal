@@ -150,7 +150,7 @@ MonoBehaviour:
   scoreReward: 500
   deathExplosionPrefab: {fileID: 0}
   cryoShotPickupPrefab: {fileID: 5707417249230319274, guid: ec735933fad9f514abb4fab284534d49, type: 3}
-  piercingShotPickupPrefab: {fileID: 0}
+  piercingShotPickupPrefab: {fileID: 8105585529203378821, guid: 91d12ceb56473854f8234a4173490cc5, type: 3}
   extraShotPickupPrefab: {fileID: 5221038164583867017, guid: 6f4df6a34f4d3f24bbb501640317229d, type: 3}
   damageBoostPickupPrefab: {fileID: 3249203284801438491, guid: cd8c472ae6907e64b88b455295f8c14e, type: 3}
   dashPickupPrefab: {fileID: 1993692072306849271, guid: ca4054cb6da728d49b965150e6009357, type: 3}
@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e15134051d979647a4f48da5ab8ed1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 50
+  maxHealth: 1
   currentHealth: 0
   invulnerabilityDuration: 1.5
   canBeInvulnerable: 0
