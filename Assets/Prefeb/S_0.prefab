@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1182827721247122346, guid: aca3ea3516a0bba4a87e836e18d8f99c, type: 3}
+  m_Sprite: {fileID: 3506067428210884038, guid: e69c791a25bbae94f9447a4a1f915603, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickupItem
   itemType: 0
-  healthSprite: {fileID: -1182827721247122346, guid: aca3ea3516a0bba4a87e836e18d8f99c, type: 3}
+  healthSprite: {fileID: 3506067428210884038, guid: e69c791a25bbae94f9447a4a1f915603, type: 3}
   shieldSprite: {fileID: -6717884257390833292, guid: 0360d41689e16094cada3209fcbe9dc8, type: 3}
   extraShotSprite: {fileID: 0}
   damageBoostSprite: {fileID: 0}
@@ -162,7 +162,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.22, y: 0.29}
+    oldSize: {x: 0.42, y: 0.35}
     newSize: {x: 0.22, y: 0.29}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

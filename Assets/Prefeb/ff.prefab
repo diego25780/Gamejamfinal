@@ -143,7 +143,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 6186229716618302393, guid: 06fec637c21aac24b80b1bc3fc0dd574, type: 3}
   firePoints: []
   attackCooldown: 1.5
-  clusterBombPrefab: {fileID: 0}
+  clusterBombPrefab: {fileID: 2405020787233984029, guid: b735d213208b59f44aa0bc4a166aa53a, type: 3}
   clusterFragmentCount: 8
   clusterFuseTime: 1
   clusterSpreadAngle: 120
@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e15134051d979647a4f48da5ab8ed1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 1
+  maxHealth: 50
   currentHealth: 0
   invulnerabilityDuration: 1.5
   canBeInvulnerable: 0
